@@ -123,6 +123,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="SqlConnectionChecker.cs" />
     <Compile Include="Utils\Interop.cs" />
     <Compile Include="Utils\TaskbarUtils.cs" />
@@ -143,6 +148,10 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Tests\TestFiles\appCode.txt" />
     <None Include="Tests\TestFiles\exeForTest.exe" />
     <None Include="Tests\TestFiles\ForTestUpdater.exe.config" />

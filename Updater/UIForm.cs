@@ -14,10 +14,10 @@ namespace Updater
     public class UIForm : Form
     {
         protected const string SqlConnectionErrorMessage = "Отсутствует подключение к серверу. {}Строка подключения:{0}";
-        private Button _cmdClear;
-        private Button _cmdDel;
-        private Button _cmdOpen;
-        private Button _cmdUpload;
+        //private Button _cmdClear;
+        //private Button _cmdDel;
+        //private Button _cmdOpen;
+        //private Button _cmdUpload;
         private Label _lblItemCount;
         private ListBox _lstFiles;
         private MainMenu _mnu;
@@ -26,8 +26,13 @@ namespace Updater
         private OpenFileDialog _openFileDialog;
         private IContainer components;
         private MenuItem menuItem1;
+        private MenuItem menuItem2;
+        private MenuItem menuItem8;
+        private MenuItem menuItem6;
+        private MenuItem menuItem7;
         private MenuItem menuItem3;
-//        private static string _errorMessage;
+        public static bool flag = false;
+        //        private static string _errorMessage;
 
         public UIForm()
         {
@@ -96,7 +101,7 @@ namespace Updater
                     switch (args[0])
                     {
                         case "-u":
-                            Application.Run(new UIForm());
+                            Application.Run(new UIForm());                            
                             break;
 
                         case "-all":
@@ -166,11 +171,6 @@ namespace Updater
             _lstFiles.Refresh();
         }
 
-        private void _mnuExite_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
         private void _mnuAboout_Click(object sender, EventArgs e)
         {
             var frm = new frmAbout();
@@ -178,23 +178,23 @@ namespace Updater
             frm.Dispose();
         }
 
-        private void _cmdClear_Click(object sender, EventArgs e)
-        {
-            DialogResult result = MessageBox.Show(this, "Очистить список файлов?", "Подтверждение удаления", MessageBoxButtons.YesNo);
+        //private void _cmdClear_Click(object sender, EventArgs e)
+        //{
+        //    DialogResult result = MessageBox.Show(this, "Очистить список файлов?", "Подтверждение удаления", MessageBoxButtons.YesNo);
 
-            if (result == DialogResult.Yes)
-            {
-                _lstFiles.Items.Clear();
-            }
-        }
+        //    if (result == DialogResult.Yes)
+        //    {
+        //        _lstFiles.Items.Clear();
+        //    }
+        //}
 
-        private void _cmdDel_Click(object sender, EventArgs e)
-        {
-            foreach (object item in new ArrayList(_lstFiles.SelectedItems))
-            {
-                _lstFiles.Items.Remove(item);
-            }
-        }
+        //private void _cmdDel_Click(object sender, EventArgs e)
+        //{
+        //    foreach (object item in new ArrayList(_lstFiles.SelectedItems))
+        //    {
+        //        _lstFiles.Items.Remove(item);
+        //    }
+        //}
 
         private void UIForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -204,37 +204,7 @@ namespace Updater
             }
         }
 
-        #region Загрузка выбранных файлов в БД
-
-        /// <summary>Загрузка выбранных файлов в БД</summary>
-        private void _cmdUpload_Click(object sender, EventArgs e)
-        {
-            if (_lstFiles.Items.Count == 0)
-            {
-                return;
-            }
-
-            String connString;
-            connString = ConfigurationSettings.AppSettings["ConnectionString"];
-            var FM = new FilesManager(connString);
-
-            var progress = new frmProgress(_lstFiles.Items.Count);
-            progress.Show();
-
-            for (Int32 i = 0; i <= _lstFiles.Items.Count - 1; i++)
-            {
-                progress.Tick(1, _lstFiles.Items[i].ToString());
-                FM.Upload(_lstFiles.Items[i].ToString());
-            }
-
-            progress.Close();
-            _lstFiles.Items.Clear();
-        }
-
-        #endregion
-
         #region Выбор файлов
-
         /// <summary>Настройка диалога</summary>
         private void InitOpenFileDialog()
         {
@@ -246,10 +216,10 @@ namespace Updater
             _openFileDialog.FilterIndex = 3;
         }
 
-        private void _cmdOpen_Click(object sender, EventArgs e)
-        {
-            _openFileDialog.ShowDialog(this);
-        }
+        //private void _cmdOpen_Click(object sender, EventArgs e)
+        //{
+        //    _openFileDialog.ShowDialog(this);
+        //}
 
         /// <summary>Возникает после нажатия на кнопку OK в диалоге</summary>
         /// <param name="sender"></param>
@@ -281,97 +251,85 @@ namespace Updater
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof (UIForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UIForm));
             this._openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this._cmdOpen = new System.Windows.Forms.Button();
-            this._cmdUpload = new System.Windows.Forms.Button();
             this._lstFiles = new System.Windows.Forms.ListBox();
-            this._cmdDel = new System.Windows.Forms.Button();
             this._mnu = new System.Windows.Forms.MainMenu(this.components);
             this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.menuItem8 = new System.Windows.Forms.MenuItem();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.menuItem7 = new System.Windows.Forms.MenuItem();
             this._mnuExite = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this._mnuAboout = new System.Windows.Forms.MenuItem();
-            this._cmdClear = new System.Windows.Forms.Button();
             this._lblItemCount = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // _cmdOpen
-            // 
-            this._cmdOpen.Anchor =
-                ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._cmdOpen.Location = new System.Drawing.Point(143, 356);
-            this._cmdOpen.Name = "_cmdOpen";
-            this._cmdOpen.Size = new System.Drawing.Size(75, 23);
-            this._cmdOpen.TabIndex = 0;
-            this._cmdOpen.Text = "Открыть";
-            this._cmdOpen.Click += new System.EventHandler(this._cmdOpen_Click);
-            // 
-            // _cmdUpload
-            // 
-            this._cmdUpload.Anchor =
-                ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._cmdUpload.Location = new System.Drawing.Point(410, 356);
-            this._cmdUpload.Name = "_cmdUpload";
-            this._cmdUpload.Size = new System.Drawing.Size(75, 23);
-            this._cmdUpload.TabIndex = 1;
-            this._cmdUpload.Text = "Загрузить";
-            this._cmdUpload.Click += new System.EventHandler(this._cmdUpload_Click);
-            // 
             // _lstFiles
             // 
-            this._lstFiles.Anchor =
-                ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                                                        | System.Windows.Forms.AnchorStyles.Left)
-                                                       | System.Windows.Forms.AnchorStyles.Right)));
+            this._lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._lstFiles.Location = new System.Drawing.Point(4, 8);
             this._lstFiles.Name = "_lstFiles";
             this._lstFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this._lstFiles.Size = new System.Drawing.Size(481, 342);
+            this._lstFiles.Size = new System.Drawing.Size(481, 355);
             this._lstFiles.TabIndex = 2;
             this._lstFiles.DoubleClick += new System.EventHandler(this._lstFiles_DoubleClick);
             // 
-            // _cmdDel
-            // 
-            this._cmdDel.Anchor =
-                ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._cmdDel.Location = new System.Drawing.Point(224, 356);
-            this._cmdDel.Name = "_cmdDel";
-            this._cmdDel.Size = new System.Drawing.Size(75, 23);
-            this._cmdDel.TabIndex = 3;
-            this._cmdDel.Text = "Удалить";
-            this._cmdDel.Click += new System.EventHandler(this._cmdDel_Click);
-            // 
             // _mnu
             // 
-            this._mnu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[]
-            {
-                this.menuItem1,
-                this.menuItem3
-            });
+            this._mnu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem1,
+            this.menuItem3});
             // 
             // menuItem1
             // 
             this.menuItem1.Index = 0;
-            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[]
-            {
-                this._mnuExite
-            });
+            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem2,
+            this.menuItem8,
+            this.menuItem6,
+            this.menuItem7,
+            this._mnuExite});
             this.menuItem1.Text = "Файл";
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 0;
+            this.menuItem2.Text = "Открыть";
+            this.menuItem2.Click += new System.EventHandler(this._mnuOpen_Click);
+            // 
+            // menuItem8
+            // 
+            this.menuItem8.Index = 1;
+            this.menuItem8.Text = "Очистить";
+            this.menuItem8.Click += new System.EventHandler(this._mnuClear_Click);
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 2;
+            this.menuItem6.Text = "Загрузить";
+            this.menuItem6.Click += new System.EventHandler(this._mnuUpload_Click);
+            // 
+            // menuItem7
+            // 
+            this.menuItem7.Index = 3;
+            this.menuItem7.Text = "Выгрузить";
+            this.menuItem7.Click += new System.EventHandler(this._mnuInload_Click);
             // 
             // _mnuExite
             // 
-            this._mnuExite.Index = 0;
+            this._mnuExite.Index = 4;
             this._mnuExite.Text = "Выход";
             this._mnuExite.Click += new System.EventHandler(this._mnuExite_Click);
             // 
             // menuItem3
             // 
             this.menuItem3.Index = 1;
-            this.menuItem3.MenuItems.AddRange(new System.Windows.Forms.MenuItem[]
-            {
-                this._mnuAboout
-            });
+            this.menuItem3.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this._mnuAboout});
             this.menuItem3.Text = "Справка";
             // 
             // _mnuAboout
@@ -380,21 +338,9 @@ namespace Updater
             this._mnuAboout.Text = "О программе";
             this._mnuAboout.Click += new System.EventHandler(this._mnuAboout_Click);
             // 
-            // _cmdClear
-            // 
-            this._cmdClear.Anchor =
-                ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._cmdClear.Location = new System.Drawing.Point(305, 356);
-            this._cmdClear.Name = "_cmdClear";
-            this._cmdClear.Size = new System.Drawing.Size(75, 23);
-            this._cmdClear.TabIndex = 4;
-            this._cmdClear.Text = "Очистить";
-            this._cmdClear.Click += new System.EventHandler(this._cmdClear_Click);
-            // 
             // _lblItemCount
             // 
-            this._lblItemCount.Anchor =
-                ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this._lblItemCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblItemCount.AutoSize = true;
             this._lblItemCount.Location = new System.Drawing.Point(4, 361);
             this._lblItemCount.Name = "_lblItemCount";
@@ -406,23 +352,105 @@ namespace Updater
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(489, 386);
             this.Controls.Add(this._lblItemCount);
-            this.Controls.Add(this._cmdClear);
-            this.Controls.Add(this._cmdDel);
             this.Controls.Add(this._lstFiles);
-            this.Controls.Add(this._cmdUpload);
-            this.Controls.Add(this._cmdOpen);
-            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Menu = this._mnu;
             this.Name = "UIForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Загрузка файлов в БД";
+            this.Text = "Работа с файлами базы данных";
             this.Load += new System.EventHandler(this.UIForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.UIForm_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion
+
+        private void _mnuOpen_Click(object sender, EventArgs e)
+        {
+            _openFileDialog.ShowDialog(this);
+        }
+
+        private void _mnuDel_Click(object sender, EventArgs e)
+        {
+            foreach (object item in new ArrayList(_lstFiles.SelectedItems))
+            {
+                _lstFiles.Items.Remove(item);
+            }
+        }
+
+        private void _mnuClear_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(this, "Очистить список файлов?", "Подтверждение удаления", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
+            {
+                _lstFiles.Items.Clear();
+            }
+        }
+
+        #region Загрузка выбранных файлов в БД
+
+        /// <summary>Загрузка выбранных файлов в БД</summary>
+        private void _mnuUpload_Click(object sender, EventArgs e)
+        {
+            if (_lstFiles.Items.Count == 0)
+            {
+                return;
+            }
+
+            String connString;
+            connString = ConfigurationSettings.AppSettings["ConnectionString"];
+            var FM = new FilesManager(connString);
+
+            var progress = new frmProgress(_lstFiles.Items.Count);
+            progress.Show();
+
+            for (Int32 i = 0; i <= _lstFiles.Items.Count - 1; i++)
+            {
+                progress.Tick(1, _lstFiles.Items[i].ToString());
+                FM.Upload(_lstFiles.Items[i].ToString());
+            }
+
+            progress.Close();
+            _lstFiles.Items.Clear();
+        }
+        #endregion
+
+        private void _mnuExite_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void _mnuInload_Click(object sender, EventArgs e)
+        {
+            flag = true;
+            if (flag == true)
+            {
+                try
+                {
+
+
+                    var UE = new UploaderEngine(ConnectionString, VersionStorageName, flag);
+                    bool isBreak = false;
+
+                    if (UE.IsNeedUpdate())
+                    {
+                        UE.StartDownload(ref isBreak);
+                    }
+
+                    if (!isBreak)
+                    {
+                        Process.Start(Application.StartupPath + @"\" + StartUpFileName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage(ex);
+                }
+            }
+        }
     }
 }

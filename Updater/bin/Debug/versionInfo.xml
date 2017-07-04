@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--Информация о версиях файлов приложения-->
+<!--Создан: 30.06.2017 12:03:26-->
+<AppFileVersions>
+  <Files>
+    <file name="versionInfo.xml" version="1" />
+    <file name="nunit.framework.xml" version="1" />
+    <file name="iron-man-custom-zheleznyy.jpg" version="1" />
+    <file name="zheleznyy-chelovek-iron-man-2594.jpg" version="1" />
+    <file name="nunit.framework.dll" version="2" />
+    <file name="iron-man-marvel-comics-3254.jpg" version="3" />
+    <file name="xinput1_3.dll" version="1" />
+    <file name="Жизнь Ли, Ю, Ри 2.0.docx" version="1" />
+    <file name="Документ Microsoft Word.docx" version="1" />
+    <file name="x360ce.ini" version="1" />
+  </Files>
+</AppFileVersions>
