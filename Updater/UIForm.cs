@@ -28,10 +28,14 @@ namespace Updater
         private MenuItem menuItem1;
         private MenuItem menuItem2;
         private MenuItem menuItem8;
-        private MenuItem menuItem6;
-        private MenuItem menuItem7;
         private MenuItem menuItem3;
+        private ListBox _lstInloadFiles;
+        private Label label1;
+        private Label label2;
+        private Button button1;
+        private Button button2;
         public static bool flag = false;
+
         //        private static string _errorMessage;
 
         public UIForm()
@@ -216,11 +220,6 @@ namespace Updater
             _openFileDialog.FilterIndex = 3;
         }
 
-        //private void _cmdOpen_Click(object sender, EventArgs e)
-        //{
-        //    _openFileDialog.ShowDialog(this);
-        //}
-
         /// <summary>Возникает после нажатия на кнопку OK в диалоге</summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -237,7 +236,7 @@ namespace Updater
                 }
             }
 
-            _lblItemCount.Text = _lstFiles.Items.Count + " файлов";
+            _lblItemCount.Text = "Файлов выбрано: " + _lstFiles.Items.Count;
         }
 
         #endregion
@@ -258,12 +257,15 @@ namespace Updater
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
-            this.menuItem6 = new System.Windows.Forms.MenuItem();
-            this.menuItem7 = new System.Windows.Forms.MenuItem();
             this._mnuExite = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this._mnuAboout = new System.Windows.Forms.MenuItem();
             this._lblItemCount = new System.Windows.Forms.Label();
+            this._lstInloadFiles = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // _lstFiles
@@ -271,11 +273,12 @@ namespace Updater
             this._lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._lstFiles.Location = new System.Drawing.Point(4, 8);
+            this._lstFiles.Location = new System.Drawing.Point(7, 31);
             this._lstFiles.Name = "_lstFiles";
             this._lstFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this._lstFiles.Size = new System.Drawing.Size(481, 355);
+            this._lstFiles.Size = new System.Drawing.Size(481, 121);
             this._lstFiles.TabIndex = 2;
+            this._lstFiles.SelectedIndexChanged += new System.EventHandler(this._lstFiles_SelectedIndexChanged);
             this._lstFiles.DoubleClick += new System.EventHandler(this._lstFiles_DoubleClick);
             // 
             // _mnu
@@ -290,8 +293,6 @@ namespace Updater
             this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem2,
             this.menuItem8,
-            this.menuItem6,
-            this.menuItem7,
             this._mnuExite});
             this.menuItem1.Text = "Файл";
             // 
@@ -307,21 +308,9 @@ namespace Updater
             this.menuItem8.Text = "Очистить";
             this.menuItem8.Click += new System.EventHandler(this._mnuClear_Click);
             // 
-            // menuItem6
-            // 
-            this.menuItem6.Index = 2;
-            this.menuItem6.Text = "Загрузить";
-            this.menuItem6.Click += new System.EventHandler(this._mnuUpload_Click);
-            // 
-            // menuItem7
-            // 
-            this.menuItem7.Index = 3;
-            this.menuItem7.Text = "Выгрузить";
-            this.menuItem7.Click += new System.EventHandler(this._mnuInload_Click);
-            // 
             // _mnuExite
             // 
-            this._mnuExite.Index = 4;
+            this._mnuExite.Index = 2;
             this._mnuExite.Text = "Выход";
             this._mnuExite.Click += new System.EventHandler(this._mnuExite_Click);
             // 
@@ -347,10 +336,62 @@ namespace Updater
             this._lblItemCount.Size = new System.Drawing.Size(0, 13);
             this._lblItemCount.TabIndex = 5;
             // 
+            // _lstInloadFiles
+            // 
+            this._lstInloadFiles.FormattingEnabled = true;
+            this._lstInloadFiles.Location = new System.Drawing.Point(7, 184);
+            this._lstInloadFiles.Name = "_lstInloadFiles";
+            this._lstInloadFiles.Size = new System.Drawing.Size(481, 147);
+            this._lstInloadFiles.TabIndex = 6;
+            this._lstInloadFiles.SelectedIndexChanged += new System.EventHandler(this._lstInloadFiles_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(309, 13);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Предварительный просмотр файлов перед загрузкой в БД";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(13, 168);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(149, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Загружаемые файлы из БД";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(12, 337);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(98, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "Отправить в БД";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this._cmdUpLoad_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(366, 337);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(111, 23);
+            this.button2.TabIndex = 10;
+            this.button2.Text = "Получить файлы";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this._cmdInLoad_Click);
+            // 
             // UIForm
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(489, 386);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this._lstInloadFiles);
             this.Controls.Add(this._lblItemCount);
             this.Controls.Add(this._lstFiles);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -391,10 +432,15 @@ namespace Updater
             }
         }
 
+        private void _mnuExite_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         #region Загрузка выбранных файлов в БД
 
         /// <summary>Загрузка выбранных файлов в БД</summary>
-        private void _mnuUpload_Click(object sender, EventArgs e)
+        private void _cmdUpLoad_Click(object sender, EventArgs e)
         {
             if (_lstFiles.Items.Count == 0)
             {
@@ -419,20 +465,13 @@ namespace Updater
         }
         #endregion
 
-        private void _mnuExite_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void _mnuInload_Click(object sender, EventArgs e)
+        private void _cmdInLoad_Click(object sender, EventArgs e)
         {
             flag = true;
             if (flag == true)
             {
                 try
                 {
-
-
                     var UE = new UploaderEngine(ConnectionString, VersionStorageName, flag);
                     bool isBreak = false;
 
@@ -451,6 +490,17 @@ namespace Updater
                     ErrorMessage(ex);
                 }
             }
+                                    
+        }
+
+        private void _lstInloadFiles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void _lstFiles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
