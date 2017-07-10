@@ -41,7 +41,7 @@ namespace Updater
 		/// <summary>
 		/// Возвращает имя файла из полного пути файла
 		/// </summary>
-		/// <param name="fullFileName"></param>
+		/// <param name="fullFileName">Полный путь файла</param>
 		/// <returns></returns>
 		public static String GetFileName( String fullFileName )
 		{

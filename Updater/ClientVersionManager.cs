@@ -4,7 +4,7 @@ using System.Xml;
 namespace Updater
 {
 	/// <summary>
-	/// Управление информацией по версиям клиентских фалов.
+	/// Управление информацией по версиям клиентских файлов.
 	/// </summary>
 	public class ClientVersionManager
 	{

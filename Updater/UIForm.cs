@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Updater.Utils;
@@ -14,10 +16,6 @@ namespace Updater
     public class UIForm : Form
     {
         protected const string SqlConnectionErrorMessage = "Отсутствует подключение к серверу. {}Строка подключения:{0}";
-        //private Button _cmdClear;
-        //private Button _cmdDel;
-        //private Button _cmdOpen;
-        //private Button _cmdUpload;
         private Label _lblItemCount;
         private ListBox _lstFiles;
         private MainMenu _mnu;
@@ -35,15 +33,50 @@ namespace Updater
         private Button button1;
         private Button button2;
         public static bool flag = false;
-
-        //        private static string _errorMessage;
+        private readonly List<FileInfo> _filesForLoad;
+        private const int BytesInMegabyte = 1048573;
+        private readonly string _xmlFileName;
 
         public UIForm()
         {
             //
             // Required for Windows Form Designer support
             //
+            _filesForLoad = new List<FileInfo>();
             InitializeComponent();
+        }
+
+        public List<FileInfo> FilesForLoad
+        {
+            get { return _filesForLoad; }
+        }
+
+        public void GetFileList()
+        {
+            String connString;
+            connString = ConfigurationSettings.AppSettings["ConnectionString"];
+            SqlConnection cnn = MiscFunction.OpenConnection(connString);
+            const string sqlStr = "SELECT idFile, version, name, DATALENGTH(binaryData) AS fileSize FROM Srv_ProgramFile";
+            var cmd = new SqlCommand(sqlStr, cnn);
+            SqlDataReader sdr = cmd.ExecuteReader();
+
+            int version = sdr.GetOrdinal("version");
+            int fileName = sdr.GetOrdinal("name");
+            int fileSize = sdr.GetOrdinal("fileSize");
+
+            var clientVersionManager = new ClientVersionManager(_xmlFileName);
+
+            FilesForLoad.Clear();
+
+            while (sdr.Read())
+            {
+                var fileInfo = new FileInfo(sdr.GetString(fileName), clientVersionManager.GetVersion(sdr.GetString(fileName)), sdr.GetInt32(version), sdr.GetInt32(fileSize));
+                    FilesForLoad.Add(fileInfo);
+                _lstInloadFiles.Items.Add(fileInfo);
+            }
+
+            sdr.Close();
+            cnn.Close();
         }
 
         private static string VersionStorageName
@@ -157,6 +190,7 @@ namespace Updater
             _openFileDialog.FileOk += _openFileDialog_FileOk;
         }
 
+        #region Удаление файла из списка
         private void _lstFiles_DoubleClick(object sender, EventArgs e)
         {
             if (_lstFiles.SelectedIndex < 0)
@@ -174,6 +208,7 @@ namespace Updater
 
             _lstFiles.Refresh();
         }
+        #endregion
 
         private void _mnuAboout_Click(object sender, EventArgs e)
         {
@@ -182,24 +217,8 @@ namespace Updater
             frm.Dispose();
         }
 
-        //private void _cmdClear_Click(object sender, EventArgs e)
-        //{
-        //    DialogResult result = MessageBox.Show(this, "Очистить список файлов?", "Подтверждение удаления", MessageBoxButtons.YesNo);
 
-        //    if (result == DialogResult.Yes)
-        //    {
-        //        _lstFiles.Items.Clear();
-        //    }
-        //}
-
-        //private void _cmdDel_Click(object sender, EventArgs e)
-        //{
-        //    foreach (object item in new ArrayList(_lstFiles.SelectedItems))
-        //    {
-        //        _lstFiles.Items.Remove(item);
-        //    }
-        //}
-
+        #region Прерывание загрузки клавишей Escape
         private void UIForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
@@ -207,6 +226,7 @@ namespace Updater
                 Close();
             }
         }
+        #endregion
 
         #region Выбор файлов
         /// <summary>Настройка диалога</summary>
@@ -409,6 +429,7 @@ namespace Updater
 
         #endregion
 
+        #region кнопки
         private void _mnuOpen_Click(object sender, EventArgs e)
         {
             _openFileDialog.ShowDialog(this);
@@ -436,6 +457,7 @@ namespace Updater
         {
             Close();
         }
+        #endregion
 
         #region Загрузка выбранных файлов в БД
 
@@ -467,30 +489,87 @@ namespace Updater
 
         private void _cmdInLoad_Click(object sender, EventArgs e)
         {
-            flag = true;
-            if (flag == true)
-            {
-                try
-                {
-                    var UE = new UploaderEngine(ConnectionString, VersionStorageName, flag);
-                    bool isBreak = false;
+            String connString;
+            connString = ConfigurationSettings.AppSettings["ConnectionString"];
+            #region пока не нужно
+            //Activate();
 
-                    if (UE.IsNeedUpdate())
+            //flag = true;
+            //try
+            //{
+            //    var UE = new UploaderEngine(ConnectionString, VersionStorageName, flag);
+            //    bool isBreak = false;
+
+            //    if (UE.IsNeedUpdate())
+            //    {
+            //        UE.StartDownload(ref isBreak);
+            //        foreach (FileInfo fileInfo in FilesForLoad)
+            //        {
+            //            _lstInloadFiles.Items.Add(fileInfo);
+            //        }
+            //    }
+
+            //    if (!isBreak)
+            //    {
+            //        Process.Start(Application.StartupPath + @"\" + StartUpFileName);
+            //    }
+
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    ErrorMessage(ex);
+            //}
+            #endregion
+            try
+                {
+                var filesManager = new FilesManager(connString);
+                //var clientVersionManager = new ClientVersionManager(_xmlFileName);
+
+                long totalSize = 0;
+                    FilesForLoad.ForEach(fileInfo => totalSize += fileInfo.FileSize);
+
+                    var progressForm = new frmProgress((int)totalSize);
+                    progressForm.Show();
+                    progressForm.BringToFront();
+
+                    var downloadProgress = new DownloadProgress(totalSize);
+
+                downloadProgress.ProgressChanged +=
+                    (senders, ex) => progressForm.Tick(ex.ChangeSize, string.Format("{0,3:#.#}/{1,3:#.#} MБ ({2})", (decimal)downloadProgress.DownloadedSize / BytesInMegabyte,
+                       (decimal)downloadProgress.TotalSize / BytesInMegabyte, downloadProgress.CurrentFileName));
+
+                foreach (FileInfo fileInfo in FilesForLoad)
                     {
-                        UE.StartDownload(ref isBreak);
+                        try
+                        {
+                            downloadProgress.SetCurrentFileName(fileInfo.FileName);
+                            filesManager.Download(fileInfo.FileName, downloadProgress);
+                            _lstInloadFiles.Items.Add(fileInfo);
+                            //clientVersionManager.SetVersion(fileInfo.FileName, fileInfo.ServerVersion);
+
+                        if (progressForm.FormKeyCode == Keys.Escape)
+                            {
+                                //breaked = true;
+                                break;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            progressForm.Fail();
+                            throw;
+                        }
+
                     }
 
-                    if (!isBreak)
-                    {
-                        Process.Start(Application.StartupPath + @"\" + StartUpFileName);
-                    }
+                    progressForm.Close();
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    ErrorMessage(ex);
+
+                    string _errorMessage = string.Format("Ошибка. {0}{1}{2}", exception.Message, Environment.NewLine, exception.StackTrace);
+                    MessageBox.Show("Ошибка запуска приложения:\r\n", _errorMessage);
                 }
-            }
-                                    
         }
 
         private void _lstInloadFiles_SelectedIndexChanged(object sender, EventArgs e)
