@@ -101,7 +101,7 @@ namespace Updater
                 var clientVersionManager = new ClientVersionManager(_xmlFileName);
 
                 long totalSize = 0;
-                FilesForUpdate.ForEach(fileInfo => totalSize += fileInfo.FileSize);
+                FilesForUpdate.ForEach(fileInfo => totalSize += fileInfo.FileSize); 
 
                 var progressForm = new frmProgress((int)totalSize);
                 progressForm.Show();

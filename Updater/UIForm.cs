@@ -35,7 +35,8 @@ namespace Updater
         public static bool flag = false;
         private readonly List<FileInfo> _filesForLoad;
         private const int BytesInMegabyte = 1048573;
-        private readonly string _xmlFileName;
+        private ListView listView1;
+        private readonly string _XMLFileName;
 
         public UIForm()
         {
@@ -51,33 +52,6 @@ namespace Updater
             get { return _filesForLoad; }
         }
 
-        public void GetFileList()
-        {
-            String connString;
-            connString = ConfigurationSettings.AppSettings["ConnectionString"];
-            SqlConnection cnn = MiscFunction.OpenConnection(connString);
-            const string sqlStr = "SELECT idFile, version, name, DATALENGTH(binaryData) AS fileSize FROM Srv_ProgramFile";
-            var cmd = new SqlCommand(sqlStr, cnn);
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            int version = sdr.GetOrdinal("version");
-            int fileName = sdr.GetOrdinal("name");
-            int fileSize = sdr.GetOrdinal("fileSize");
-
-            var clientVersionManager = new ClientVersionManager(_xmlFileName);
-
-            FilesForLoad.Clear();
-
-            while (sdr.Read())
-            {
-                var fileInfo = new FileInfo(sdr.GetString(fileName), clientVersionManager.GetVersion(sdr.GetString(fileName)), sdr.GetInt32(version), sdr.GetInt32(fileSize));
-                    FilesForLoad.Add(fileInfo);
-                _lstInloadFiles.Items.Add(fileInfo);
-            }
-
-            sdr.Close();
-            cnn.Close();
-        }
 
         private static string VersionStorageName
         {
@@ -138,7 +112,7 @@ namespace Updater
                     switch (args[0])
                     {
                         case "-u":
-                            Application.Run(new UIForm());                            
+                            Application.Run(new UIForm());
                             break;
 
                         case "-all":
@@ -153,7 +127,7 @@ namespace Updater
                 string _errorMessage = string.Format("Ошибка. {0}{1}{2}", exception.Message, Environment.NewLine, exception.StackTrace);
                 MessageBox.Show("Ошибка запуска приложения:\r\n", _errorMessage);
             }
-           
+
         }
 
         private static void StartUpdate(Boolean downloadAllFiles)
@@ -286,12 +260,13 @@ namespace Updater
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.SuspendLayout();
             // 
             // _lstFiles
             // 
-            this._lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this._lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this._lstFiles.Location = new System.Drawing.Point(7, 31);
             this._lstFiles.Name = "_lstFiles";
@@ -361,7 +336,7 @@ namespace Updater
             this._lstInloadFiles.FormattingEnabled = true;
             this._lstInloadFiles.Location = new System.Drawing.Point(7, 184);
             this._lstInloadFiles.Name = "_lstInloadFiles";
-            this._lstInloadFiles.Size = new System.Drawing.Size(481, 147);
+            this._lstInloadFiles.Size = new System.Drawing.Size(211, 147);
             this._lstInloadFiles.TabIndex = 6;
             this._lstInloadFiles.SelectedIndexChanged += new System.EventHandler(this._lstInloadFiles_SelectedIndexChanged);
             // 
@@ -403,10 +378,20 @@ namespace Updater
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this._cmdInLoad_Click);
             // 
+            // listView1
+            // 
+            this.listView1.Location = new System.Drawing.Point(264, 184);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(179, 147);
+            this.listView1.TabIndex = 11;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            // 
             // UIForm
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(489, 386);
+            this.Controls.Add(this.listView1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
@@ -491,13 +476,83 @@ namespace Updater
         {
             String connString;
             connString = ConfigurationSettings.AppSettings["ConnectionString"];
-            #region пока не нужно
-            //Activate();
+            String versionStorageName;
+            versionStorageName = ConfigurationSettings.AppSettings["VersionStorageName"];
 
+            SqlConnection cnn = MiscFunction.OpenConnection(connString);
+            const string sqlStr = "SELECT idFile, version, name, DATALENGTH(binaryData) AS fileSize FROM Srv_ProgramFile";
+            var cmd = new SqlCommand(sqlStr, cnn);
+            SqlDataReader sdr = cmd.ExecuteReader();
+
+            int version = sdr.GetOrdinal("version");
+            int fileName = sdr.GetOrdinal("name");
+            int fileSize = sdr.GetOrdinal("fileSize");
+
+            var clientVersionManager = new ClientVersionManager(versionStorageName);
+
+            FilesForLoad.Clear();
+            while (sdr.Read())
+            {
+                var fileInfo = new FileInfo(sdr.GetString(fileName), clientVersionManager.GetVersion(sdr.GetString(fileName)), sdr.GetInt32(version), sdr.GetInt32(fileSize));
+
+                if (fileInfo.NeedUpdate)
+                {
+                    FilesForLoad.Add(fileInfo);
+                }
+            }
+
+            sdr.Close();
+            cnn.Close();
+
+            try
+            {
+                var filesManager = new FilesManager(connString);
+                var CVManager = new ClientVersionManager(versionStorageName);
+
+                long totalSize = 0;
+                FilesForLoad.ForEach(fileInfo => totalSize += fileInfo.FileSize);
+
+                var progressForm = new frmProgress((int)totalSize);
+                progressForm.Show();
+                progressForm.BringToFront();
+
+                var downloadProgress = new DownloadProgress(totalSize);
+
+                downloadProgress.ProgressChanged +=
+                    (senders, ex) => progressForm.Tick(ex.ChangeSize, string.Format("{0,3:#.#}/{1,3:#.#} MБ ({2})", (decimal)downloadProgress.DownloadedSize / BytesInMegabyte,
+                       (decimal)downloadProgress.TotalSize / BytesInMegabyte, downloadProgress.CurrentFileName));
+
+                foreach (FileInfo fileInfo in FilesForLoad)
+                {
+                    try
+                    {
+                        downloadProgress.SetCurrentFileName(fileInfo.FileName);
+                        filesManager.Download(fileInfo.FileName, downloadProgress);
+                        CVManager.SetVersion(fileInfo.FileName, fileInfo.ServerVersion);
+
+                    }
+                    catch (Exception)
+                    {
+                        progressForm.Fail();
+                        throw;
+                    }
+
+                }
+
+                progressForm.Close();
+            }
+            catch (Exception exception)
+            {
+
+                string _errorMessage = string.Format("Ошибка. {0}{1}{2}", exception.Message, Environment.NewLine, exception.StackTrace);
+                MessageBox.Show("Ошибка запуска приложения:\r\n", _errorMessage);
+            }
+
+            #region пока не нужно
             //flag = true;
             //try
             //{
-            //    var UE = new UploaderEngine(ConnectionString, VersionStorageName, flag);
+            //var UE = new UploaderEngine(ConnectionString, VersionStorageName, flag);
             //    bool isBreak = false;
 
             //    if (UE.IsNeedUpdate())
@@ -505,7 +560,7 @@ namespace Updater
             //        UE.StartDownload(ref isBreak);
             //        foreach (FileInfo fileInfo in FilesForLoad)
             //        {
-            //            _lstInloadFiles.Items.Add(fileInfo);
+            //            listView1.Items.Add(fileInfo.ToString());
             //        }
             //    }
 
@@ -513,65 +568,15 @@ namespace Updater
             //    {
             //        Process.Start(Application.StartupPath + @"\" + StartUpFileName);
             //    }
-
-
             //}
             //catch (Exception ex)
             //{
             //    ErrorMessage(ex);
             //}
             #endregion
-            try
-                {
-                var filesManager = new FilesManager(connString);
-                //var clientVersionManager = new ClientVersionManager(_xmlFileName);
-
-                long totalSize = 0;
-                    FilesForLoad.ForEach(fileInfo => totalSize += fileInfo.FileSize);
-
-                    var progressForm = new frmProgress((int)totalSize);
-                    progressForm.Show();
-                    progressForm.BringToFront();
-
-                    var downloadProgress = new DownloadProgress(totalSize);
-
-                downloadProgress.ProgressChanged +=
-                    (senders, ex) => progressForm.Tick(ex.ChangeSize, string.Format("{0,3:#.#}/{1,3:#.#} MБ ({2})", (decimal)downloadProgress.DownloadedSize / BytesInMegabyte,
-                       (decimal)downloadProgress.TotalSize / BytesInMegabyte, downloadProgress.CurrentFileName));
-
-                foreach (FileInfo fileInfo in FilesForLoad)
-                    {
-                        try
-                        {
-                            downloadProgress.SetCurrentFileName(fileInfo.FileName);
-                            filesManager.Download(fileInfo.FileName, downloadProgress);
-                            _lstInloadFiles.Items.Add(fileInfo);
-                            //clientVersionManager.SetVersion(fileInfo.FileName, fileInfo.ServerVersion);
-
-                        if (progressForm.FormKeyCode == Keys.Escape)
-                            {
-                                //breaked = true;
-                                break;
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            progressForm.Fail();
-                            throw;
-                        }
-
-                    }
-
-                    progressForm.Close();
-                }
-                catch (Exception exception)
-                {
-
-                    string _errorMessage = string.Format("Ошибка. {0}{1}{2}", exception.Message, Environment.NewLine, exception.StackTrace);
-                    MessageBox.Show("Ошибка запуска приложения:\r\n", _errorMessage);
-                }
         }
 
+        #region боксы
         private void _lstInloadFiles_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -581,5 +586,12 @@ namespace Updater
         {
 
         }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+        #endregion
+
     }
 }
