@@ -48,13 +48,14 @@ namespace Updater
         public void GetFileList()
         {
             SqlConnection cnn = MiscFunction.OpenConnection(_connectionString);
-            const string sqlStr = "SELECT idFile, version, name, DATALENGTH(binaryData) AS fileSize FROM Srv_ProgramFile";
+            const string sqlStr = "SELECT idFile, version, name, DATALENGTH(binaryData), Date AS fileSize FROM Srv_ProgramFile";
             var cmd = new SqlCommand(sqlStr, cnn);
             SqlDataReader sdr = cmd.ExecuteReader();
 
             int version = sdr.GetOrdinal("version");
             int fileName = sdr.GetOrdinal("name");
             int fileSize = sdr.GetOrdinal("fileSize");
+            int fileDate = sdr.GetOrdinal("Date");
 
             var clientVersionManager = new ClientVersionManager(_xmlFileName);
 

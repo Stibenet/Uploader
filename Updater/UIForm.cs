@@ -27,7 +27,6 @@ namespace Updater
         private MenuItem menuItem2;
         private MenuItem menuItem8;
         private MenuItem menuItem3;
-        private ListBox _lstInloadFiles;
         private Label label1;
         private Label label2;
         private Button button1;
@@ -36,6 +35,9 @@ namespace Updater
         private readonly List<FileInfo> _filesForLoad;
         private const int BytesInMegabyte = 1048573;
         private ListView listView1;
+        private ColumnHeader columnHeader1;
+        private ColumnHeader columnHeader2;
+        private ColumnHeader columnHeader3;
         private readonly string _XMLFileName;
 
         public UIForm()
@@ -255,18 +257,20 @@ namespace Updater
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this._mnuAboout = new System.Windows.Forms.MenuItem();
             this._lblItemCount = new System.Windows.Forms.Label();
-            this._lstInloadFiles = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // _lstFiles
             // 
-            this._lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this._lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._lstFiles.Location = new System.Drawing.Point(7, 31);
             this._lstFiles.Name = "_lstFiles";
@@ -331,15 +335,6 @@ namespace Updater
             this._lblItemCount.Size = new System.Drawing.Size(0, 13);
             this._lblItemCount.TabIndex = 5;
             // 
-            // _lstInloadFiles
-            // 
-            this._lstInloadFiles.FormattingEnabled = true;
-            this._lstInloadFiles.Location = new System.Drawing.Point(7, 184);
-            this._lstInloadFiles.Name = "_lstInloadFiles";
-            this._lstInloadFiles.Size = new System.Drawing.Size(211, 147);
-            this._lstInloadFiles.TabIndex = 6;
-            this._lstInloadFiles.SelectedIndexChanged += new System.EventHandler(this._lstInloadFiles_SelectedIndexChanged);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -380,12 +375,33 @@ namespace Updater
             // 
             // listView1
             // 
-            this.listView1.Location = new System.Drawing.Point(264, 184);
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listView1.GridLines = true;
+            this.listView1.Location = new System.Drawing.Point(7, 184);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(179, 147);
+            this.listView1.Size = new System.Drawing.Size(481, 147);
             this.listView1.TabIndex = 11;
             this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 146;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Version";
+            this.columnHeader2.Width = 161;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Date";
+            this.columnHeader3.Width = 172;
             // 
             // UIForm
             // 
@@ -396,7 +412,6 @@ namespace Updater
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this._lstInloadFiles);
             this.Controls.Add(this._lblItemCount);
             this.Controls.Add(this._lstFiles);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -477,7 +492,7 @@ namespace Updater
             String connString;
             connString = ConfigurationSettings.AppSettings["ConnectionString"];
             String versionStorageName;
-            versionStorageName = ConfigurationSettings.AppSettings["VersionStorageName"];
+            versionStorageName = ConfigurationSettings.AppSettings["VersionStorage"];
 
             SqlConnection cnn = MiscFunction.OpenConnection(connString);
             const string sqlStr = "SELECT idFile, version, name, DATALENGTH(binaryData) AS fileSize FROM Srv_ProgramFile";
@@ -487,6 +502,7 @@ namespace Updater
             int version = sdr.GetOrdinal("version");
             int fileName = sdr.GetOrdinal("name");
             int fileSize = sdr.GetOrdinal("fileSize");
+            //int fileDate = sdr.GetOrdinal("Date");
 
             var clientVersionManager = new ClientVersionManager(versionStorageName);
 
@@ -498,6 +514,11 @@ namespace Updater
                 if (fileInfo.NeedUpdate)
                 {
                     FilesForLoad.Add(fileInfo);
+                    ListViewItem lvi = new ListViewItem(fileInfo.FileName.ToString());
+                    lvi.SubItems.Add(fileInfo.ServerVersion.ToString());
+                    listView1.Items.Add(lvi);
+                    //lvi.SubItems.Add(Date);
+
                 }
             }
 
