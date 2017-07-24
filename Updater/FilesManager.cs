@@ -44,8 +44,8 @@ namespace Updater
 
             if (!ChekExists(CN, fileName))
             {//INSERT
-                strSQL = "INSERT INTO Srv_ProgramFile (version, name, author, binaryData) " +
-                    "VALUES (1, @name, @autor, @binaryData)";
+                strSQL = "INSERT INTO Srv_ProgramFile (version, name, author, binaryData, Date) " +
+                    "VALUES (1, @name, @autor, @binaryData, @Date)";
             }
             else
             {//UPDATE
@@ -57,6 +57,7 @@ namespace Updater
             cmd.Parameters.Add(new SqlParameter("@name", SqlDbType.NVarChar, 128)).Value = fileName;
             cmd.Parameters.Add(new SqlParameter("@autor", SqlDbType.NVarChar, 50)).Value = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             cmd.Parameters.Add(new SqlParameter("@binaryData", SqlDbType.Image)).Value = imageData;
+            cmd.Parameters.Add("@Date", DateTime.Now.Date);
             cmd.ExecuteNonQuery();
 
             CN.Close();

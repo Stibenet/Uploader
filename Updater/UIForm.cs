@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -34,10 +35,7 @@ namespace Updater
         public static bool flag = false;
         private readonly List<FileInfo> _filesForLoad;
         private const int BytesInMegabyte = 1048573;
-        private ListView listView1;
-        private ColumnHeader columnHeader1;
-        private ColumnHeader columnHeader2;
-        private ColumnHeader columnHeader3;
+        private DataGridView dataGridView1;
         private readonly string _XMLFileName;
 
         public UIForm()
@@ -261,10 +259,8 @@ namespace Updater
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // _lstFiles
@@ -275,7 +271,7 @@ namespace Updater
             this._lstFiles.Location = new System.Drawing.Point(7, 31);
             this._lstFiles.Name = "_lstFiles";
             this._lstFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this._lstFiles.Size = new System.Drawing.Size(481, 121);
+            this._lstFiles.Size = new System.Drawing.Size(541, 121);
             this._lstFiles.TabIndex = 2;
             this._lstFiles.SelectedIndexChanged += new System.EventHandler(this._lstFiles_SelectedIndexChanged);
             this._lstFiles.DoubleClick += new System.EventHandler(this._lstFiles_DoubleClick);
@@ -330,7 +326,7 @@ namespace Updater
             // 
             this._lblItemCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblItemCount.AutoSize = true;
-            this._lblItemCount.Location = new System.Drawing.Point(4, 361);
+            this._lblItemCount.Location = new System.Drawing.Point(4, 368);
             this._lblItemCount.Name = "_lblItemCount";
             this._lblItemCount.Size = new System.Drawing.Size(0, 13);
             this._lblItemCount.TabIndex = 5;
@@ -355,7 +351,7 @@ namespace Updater
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 337);
+            this.button1.Location = new System.Drawing.Point(7, 360);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(98, 23);
             this.button1.TabIndex = 9;
@@ -365,7 +361,7 @@ namespace Updater
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(366, 337);
+            this.button2.Location = new System.Drawing.Point(404, 360);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(111, 23);
             this.button2.TabIndex = 10;
@@ -373,41 +369,29 @@ namespace Updater
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this._cmdInLoad_Click);
             // 
-            // listView1
+            // dataGridView1
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listView1.GridLines = true;
-            this.listView1.Location = new System.Drawing.Point(7, 184);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(481, 147);
-            this.listView1.TabIndex = 11;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 146;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Version";
-            this.columnHeader2.Width = 161;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Date";
-            this.columnHeader3.Width = 172;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.dataGridView1.GridColor = System.Drawing.SystemColors.ScrollBar;
+            this.dataGridView1.Location = new System.Drawing.Point(7, 194);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.Size = new System.Drawing.Size(541, 138);
+            this.dataGridView1.TabIndex = 12;
             // 
             // UIForm
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(489, 386);
-            this.Controls.Add(this.listView1);
+            this.ClientSize = new System.Drawing.Size(549, 393);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
@@ -422,6 +406,7 @@ namespace Updater
             this.Text = "Работа с файлами базы данных";
             this.Load += new System.EventHandler(this.UIForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.UIForm_KeyDown);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -487,6 +472,7 @@ namespace Updater
         }
         #endregion
 
+        #region Загрузка файлов из БД
         private void _cmdInLoad_Click(object sender, EventArgs e)
         {
             String connString;
@@ -502,7 +488,6 @@ namespace Updater
             int version = sdr.GetOrdinal("version");
             int fileName = sdr.GetOrdinal("name");
             int fileSize = sdr.GetOrdinal("fileSize");
-            //int fileDate = sdr.GetOrdinal("Date");
 
             var clientVersionManager = new ClientVersionManager(versionStorageName);
 
@@ -514,17 +499,21 @@ namespace Updater
                 if (fileInfo.NeedUpdate)
                 {
                     FilesForLoad.Add(fileInfo);
-                    ListViewItem lvi = new ListViewItem(fileInfo.FileName.ToString());
-                    lvi.SubItems.Add(fileInfo.ServerVersion.ToString());
-                    listView1.Items.Add(lvi);
-                    //lvi.SubItems.Add(Date);
-
                 }
             }
-
             sdr.Close();
             cnn.Close();
 
+            //Вывод в таблицу информации при загрузке файлов из БД
+            using (SqlDataAdapter a = new SqlDataAdapter("SELECT version, name, Date FROM Srv_ProgramFile", cnn))
+            {
+                SqlCommandBuilder cb = new SqlCommandBuilder(a);
+                DataSet ds = new DataSet();
+                a.Fill(ds, "Srv_ProgramFile");
+                dataGridView1.DataSource = ds.Tables[0];
+            }
+
+            #region Процесс загрузки
             try
             {
                 var filesManager = new FilesManager(connString);
@@ -568,34 +557,9 @@ namespace Updater
                 string _errorMessage = string.Format("Ошибка. {0}{1}{2}", exception.Message, Environment.NewLine, exception.StackTrace);
                 MessageBox.Show("Ошибка запуска приложения:\r\n", _errorMessage);
             }
-
-            #region пока не нужно
-            //flag = true;
-            //try
-            //{
-            //var UE = new UploaderEngine(ConnectionString, VersionStorageName, flag);
-            //    bool isBreak = false;
-
-            //    if (UE.IsNeedUpdate())
-            //    {
-            //        UE.StartDownload(ref isBreak);
-            //        foreach (FileInfo fileInfo in FilesForLoad)
-            //        {
-            //            listView1.Items.Add(fileInfo.ToString());
-            //        }
-            //    }
-
-            //    if (!isBreak)
-            //    {
-            //        Process.Start(Application.StartupPath + @"\" + StartUpFileName);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    ErrorMessage(ex);
-            //}
-            #endregion
         }
+        #endregion
+        #endregion
 
         #region боксы
         private void _lstInloadFiles_SelectedIndexChanged(object sender, EventArgs e)
