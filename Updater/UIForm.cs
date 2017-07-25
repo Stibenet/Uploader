@@ -469,8 +469,11 @@ namespace Updater
 
             progress.Close();
             _lstFiles.Items.Clear();
+
+
         }
         #endregion
+
 
         #region Загрузка файлов из БД
         private void _cmdInLoad_Click(object sender, EventArgs e)
@@ -578,5 +581,9 @@ namespace Updater
         }
         #endregion
 
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

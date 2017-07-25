@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace Updater
 {
@@ -29,15 +30,18 @@ namespace Updater
         public void Upload(String fullFileName)
         {
             SqlConnection CN = MiscFunction.OpenConnection(_connectionString);
-            //			String[] arrFilename = System.Text.RegularExpressions.Regex.Split( fullFileName, "/" );
-            //			Array.Reverse(arrFilename);
-            //			Console.WriteLine( fullFileName );
+            RIPEMD160 myRIPEMD160 = RIPEMD160Managed.Create();
             String fileName = MiscFunction.GetFileName(fullFileName);
-
 
             FileStream fs = new System.IO.FileStream(fullFileName, FileMode.Open, FileAccess.Read);
             Byte[] imageData = new Byte[fs.Length];
             fs.Read(imageData, 0, Convert.ToInt32(fs.Length));
+
+            //SHA-1 
+            byte[] hashValue;
+            hashValue = myRIPEMD160.ComputeHash(fs);         
+            PrintByteArray(hashValue);
+
             fs.Close();
 
             String strSQL;
@@ -61,6 +65,15 @@ namespace Updater
             cmd.ExecuteNonQuery();
 
             CN.Close();
+        }
+
+        public static void PrintByteArray(byte[] array)
+        {
+            int i;
+            for (i = 0; i < array.Length; i++)
+            {
+                System.IO.File.WriteAllText("C:\\Users\\Марсель\\Documents\\Uploader\\Updater\\bin\\Debug\\TestFile.txt", String.Format("{0:X2}", array[i]));
+            }
         }
 
 
