@@ -72,7 +72,7 @@ namespace Updater
             int i;
             for (i = 0; i < array.Length; i++)
             {
-                System.IO.File.WriteAllText("C:\\Users\\Марсель\\Documents\\Uploader\\Updater\\bin\\Debug\\TestFile.txt", String.Format("{0:X2}", array[i]));
+                System.IO.File.WriteAllText("C:\\Users\\Марсель\\Documents\\Uploader\\Updater\\bin\\Debug\\TestFile.txt", array[i]));
             }
         }
 
