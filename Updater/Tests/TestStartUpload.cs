@@ -26,7 +26,6 @@ namespace Updater.Tests
 			DelFile( TestSetUp.sturtupTxtTest );
 
 			FilesManager FM = new FilesManager( TestSetUp.ConnectionString );
-			FM.Upload( TestSetUp.sturtupExecOriginal );
 
 
 			String startUpFile = System.IO.Path.GetFullPath( @"..\..\bin\Debug\Updater.exe" );
@@ -66,9 +65,6 @@ namespace Updater.Tests
 				File.Delete( FileName );
 		
 		}
-
-		
-
 	}
 
 }

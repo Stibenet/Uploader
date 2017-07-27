@@ -18,35 +18,6 @@ namespace Updater.Tests
 			System.IO.File.Copy( TestSetUp.config, "Updater.exe.config", true );
 		}
 
-
-		 private void UpNDownloadFile( String tstFile, String tstFile2 )
-		{	
-			System.DateTime dtStart = System.DateTime.Now;
-			System.DateTime dtEnd;
-
-			FilesManager uploadedFile = new FilesManager( TestSetUp.ConnectionString );
-			uploadedFile.Upload( tstFile );
-
-			dtEnd = System.DateTime.Now;
-			Console.WriteLine( "время закачки файла в БД = " + ( dtEnd - dtStart ) );
-			
-
-			dtStart = System.DateTime.Now;
-			FilesManager downloadedFile = new FilesManager( TestSetUp.ConnectionString );
-//			downloadedFile.Download( tstFile, tstFile2 );
-			dtEnd = System.DateTime.Now;
-			Console.WriteLine( "время закачки файла из БД = " + ( dtEnd - dtStart ) );
-
-			AssertFilesEqual(  tstFile, tstFile2 );
-		}
-
-		[Test] public void StartUpDownFileTest()
-		{
-			UpNDownloadFile( TestSetUp.bynOriginal, TestSetUp.bynTest );
-
-			UpNDownloadFile( TestSetUp.txtOriginal, TestSetUp.txtTest );		
-		}
-
 		/// <summary>
 		/// Проверка идентичности 2-х файлов
 		/// </summary>

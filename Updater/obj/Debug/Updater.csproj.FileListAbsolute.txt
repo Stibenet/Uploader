@@ -13,3 +13,17 @@ C:\Users\Марсель\Documents\Uploader\Updater\obj\Debug\Updater.UIForm.reso
 C:\Users\Марсель\Documents\Uploader\Updater\obj\Debug\Updater.csproj.GenerateResource.Cache
 C:\Users\Марсель\Documents\Uploader\Updater\obj\Debug\Updater.exe
 C:\Users\Марсель\Documents\Uploader\Updater\obj\Debug\Updater.pdb
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.csprojResolveAssemblyReference.cache
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.Properties.Resources.resources
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.WaitForm.resources
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\frmAbout.resources
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.frmProgress.resources
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.UIForm.resources
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.csproj.GenerateResource.Cache
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.exe
+C:\Users\Марсель\Documents\Inload files\Updater\obj\Debug\Updater.pdb
+C:\Users\Марсель\Documents\Inload files\Updater\bin\Debug\Updater.exe.config
+C:\Users\Марсель\Documents\Inload files\Updater\bin\Debug\Updater.exe
+C:\Users\Марсель\Documents\Inload files\Updater\bin\Debug\Updater.pdb
+C:\Users\Марсель\Documents\Inload files\Updater\bin\Debug\nunit.framework.dll
+C:\Users\Марсель\Documents\Inload files\Updater\bin\Debug\nunit.framework.xml
